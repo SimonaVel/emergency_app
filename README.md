@@ -1,10 +1,10 @@
 # emergency_app
 
-A new Flutter project.
+## Overview
 
-## Getting Started
+A flutter app for reporting emergencies. 
 
-This project is a starting point for a Flutter application.
+## Flutter-specific resources
 
 A few resources to get you started if this is your first Flutter project:
 
