@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:emergency_app/parameters.dart';
+import 'package:emergency_app/utils/parameters.dart';
 
 class EmergencyButton extends StatelessWidget {
   const EmergencyButton({
