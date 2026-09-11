@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:emergency_app/utils/parameters.dart';
-import 'package:emergency_app/main_elements.dart';
+import 'package:emergency_app/widgets/main_elements.dart';
 
 void main() {
   runApp(const MyApp());
