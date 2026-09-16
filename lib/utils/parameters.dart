@@ -1,11 +1,8 @@
 class Parameters {
   static double buttonPadding = 3.0;
-  static Map<String, String> emergencyTypes = {
-    'medical_emergency_button' : 'Medical emergency',
-    'natural_disaster_button' : 'Natural disaster',
-    'abuse_button' : 'Abuse',
-    'minor_missing_button' : 'Minor missing',
-    'catastrophic_event_button' : 'Catastrophic event',
-    'other_button' : 'Other',
-  };
+
+  // Base URL for the backend API.
+  // Note: on the Android emulator, "localhost" refers to the emulator
+  // itself, not your machine - use 10.0.2.2 instead when targeting Android.
+  static const String apiBaseUrl = 'http://localhost:3000';
 }

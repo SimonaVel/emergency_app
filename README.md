@@ -6,6 +6,16 @@
 
 A flutter app for reporting emergencies. 
 
+### How to start application:
+1) Start back-end:
+   ```
+   npm run backend:dev
+   ```
+2) Start front-end:
+   ```
+   flutter run
+   ```
+
 ## Flutter-specific resources
 
 A few resources:

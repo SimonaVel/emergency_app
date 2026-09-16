@@ -1,8 +1,22 @@
 {
+  "type": "module",
+  "scripts": {
+    "db:init": "tsx backend/src/database/initDb.ts",
+    "backend:dev": "tsx watch backend/src/index.ts",
+    "backend:build": "tsc && mkdir -p dist/backend/src/database && cp backend/src/database/seed_emergency_types.sql dist/backend/src/database/",
+    "backend:start": "node dist/backend/src/index.js"
+  },
   "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "mysql2": "^3.24.4"
   },
   "devDependencies": {
-    "@types/node": "^22.20.2"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.2",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
   }
 }

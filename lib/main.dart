@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:emergency_app/utils/parameters.dart';
+import 'package:emergency_app/models/emergency.dart';
+import 'package:emergency_app/services/emergency_service.dart';
 import 'package:emergency_app/widgets/main_elements.dart';
+import 'package:emergency_app/screens/add_emergency_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,17 +43,31 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // TODO : remove legacy code
-  int _counter = 0;
-  void _incrementCounter() {
+  late Future<List<Emergency>> _emergenciesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _emergenciesFuture = EmergencyService.fetchEmergencies();
+  }
+
+  void _refreshEmergencies() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _emergenciesFuture = EmergencyService.fetchEmergencies();
     });
+  }
+
+  Future<void> _openAddEmergencyScreen() async {
+    final created = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const AddEmergencyScreen()),
+    );
+
+    if (created == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Emergency added')),
+      );
+      _refreshEmergencies();
+    }
   }
 
   @override
@@ -63,18 +79,41 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child:GridView.count(
-          crossAxisCount: 2,
-          children: Parameters.emergencyTypes.entries.map((entry) {
-            return EmergencyButton(
-              id: entry.key,
-              text: entry.value,
-              onPressed: () {
-                // _handleEmergency(entry.key);
-              },
+        child: FutureBuilder<List<Emergency>>(
+          future: _emergenciesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
+            if (snapshot.hasError) {
+              return Text('Could not load emergencies: ${snapshot.error}');
+            }
+
+            final emergencies = snapshot.data ?? const <Emergency>[];
+            if (emergencies.isEmpty) {
+              return const Text('No emergencies yet.');
+            }
+
+            return GridView.count(
+              crossAxisCount: 2,
+              children: emergencies.map((emergency) {
+                return EmergencyButton(
+                  id: emergency.id.toString(),
+                  text: emergency.name,
+                  onPressed: () {
+                    // _handleEmergency(emergency.id);
+                  },
+                );
+              }).toList(),
             );
-          }).toList(),
+          },
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        key: const Key('add_emergency_button'),
+        onPressed: _openAddEmergencyScreen,
+        icon: const Icon(Icons.add),
+        label: const Text('Add emergency'),
       ),
     );
   }
