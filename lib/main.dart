@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:emergency_app/models/emergency.dart';
-import 'package:emergency_app/services/emergency_service.dart';
+import 'package:emergency_app/models/emergency_type.dart';
+import 'package:emergency_app/services/emergency_type_service.dart';
 import 'package:emergency_app/widgets/main_elements.dart';
 import 'package:emergency_app/screens/add_emergency_screen.dart';
 
@@ -34,30 +34,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<Emergency>> _emergenciesFuture;
+  late Future<List<EmergencyType>> _emergencyTypesFuture;
 
   @override
   void initState() {
     super.initState();
-    _emergenciesFuture = EmergencyService.fetchEmergencies();
+    _emergencyTypesFuture = EmergencyTypeService.fetchEmergencyTypes();
   }
 
-  void _refreshEmergencies() {
+  void _refreshEmergencyTypes() {
     setState(() {
-      _emergenciesFuture = EmergencyService.fetchEmergencies();
+      _emergencyTypesFuture = EmergencyTypeService.fetchEmergencyTypes();
     });
   }
 
   Future<void> _openAddEmergencyScreen() async {
     final created = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const AddEmergencyScreen()),
+      MaterialPageRoute(builder: (_) => const AddEmergencyTypeScreen()),
     );
 
     if (created == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Emergency added')),
       );
-      _refreshEmergencies();
+      _refreshEmergencyTypes();
     }
   }
 
@@ -70,28 +70,28 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: FutureBuilder<List<Emergency>>(
-          future: _emergenciesFuture,
+        child: FutureBuilder<List<EmergencyType>>(
+          future: _emergencyTypesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             }
             if (snapshot.hasError) {
-              // return Text('Could not load emergencies: ${snapshot.error}');
-              return const Text('Could not load emergencies. Please run the backend server and try again. (npm run backend:dev)');
+              // return Text('Could not load emergency types: ${snapshot.error}');
+              return const Text('Could not load emergency types. Please run the backend server and try again. (npm run backend:dev)');
             }
 
-            final emergencies = snapshot.data ?? const <Emergency>[];
-            if (emergencies.isEmpty) {
-              return const Text('No emergencies yet.');
+            final emergencyTypes = snapshot.data ?? const <EmergencyType>[];
+            if (emergencyTypes.isEmpty) {
+              return const Text('No emergency types yet.');
             }
 
             return GridView.count(
               crossAxisCount: 2,
-              children: emergencies.map((emergency) {
+              children: emergencyTypes.map((emergencyType) {
                 return EmergencyButton(
-                  id: emergency.id.toString(),
-                  text: emergency.name,
+                  id: emergencyType.id.toString(),
+                  text: emergencyType.name,
                   onPressed: () {
                     // _handleEmergency(emergency.id);
                   },
@@ -102,10 +102,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        key: const Key('add_emergency_button'),
+        key: const Key('add_emergency_type_button'),
         onPressed: _openAddEmergencyScreen,
         icon: const Icon(Icons.add),
-        label: const Text('Add emergency'),
+        label: const Text('Add emergency type'),
       ),
     );
   }

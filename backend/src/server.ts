@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { emergencyRouter } from './routes/emergencyRoutes.js';
+import { emergencyTypeRouter } from './routes/emergencyRoutes.js';
 
 export function createServer() {
   const app = express();
@@ -12,7 +12,7 @@ export function createServer() {
     res.json({ status: 'ok' });
   });
 
-  app.use('/api/emergencies', emergencyRouter);
+  app.use('/api/emergencyTypes', emergencyTypeRouter);
 
   return app;
 }

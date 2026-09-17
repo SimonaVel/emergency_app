@@ -1,4 +1,4 @@
-export class Emergency {
+export class EmergencyType {
     id: number;
     name: string;
     

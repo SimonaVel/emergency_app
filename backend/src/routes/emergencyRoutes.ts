@@ -1,40 +1,40 @@
 import { Router, type Request, type Response } from 'express';
-import { createEmergency, getAllEmergencies, updateEmergency, deleteEmergency, getEmergencyById } from '../services/emergencyService.js';
+import { createEmergencyType, getAllEmergencyTypes, updateEmergencyType, deleteEmergencyType, getEmergencyTypeById } from '../services/emergencyService.js';
 
-export const emergencyRouter = Router();
+export const emergencyTypeRouter = Router();
 
-// GET /api/emergencies - list all emergencies
-emergencyRouter.get('/', async (_req: Request, res: Response) => {
+// GET /api/emergencyTypes - list all emergencyTypes
+emergencyTypeRouter.get('/', async (_req: Request, res: Response) => {
   try {
-    const emergencies = await getAllEmergencies();
-    res.json(emergencies.map((emergency) => emergency.toJSON()));
+    const emergencyTypes = await getAllEmergencyTypes();
+    res.json(emergencyTypes.map((emergencyType) => emergencyType.toJSON()));
   } catch (error) {
-    console.error('Failed to fetch emergencies:', error);
-    res.status(500).json({ error: 'Failed to fetch emergencies' });
+    console.error('Failed to fetch emergencyType types:', error);
+    res.status(500).json({ error: 'Failed to fetch emergencyType types' });
   }
 });
 
-// GET /api/emergencies/:id - get a specific emergency by ID
-emergencyRouter.get('/:id', async (req: Request, res: Response) => {
+// GET /api/emergencyTypes/:id - get a specific emergencyType by ID
+emergencyTypeRouter.get('/:id', async (req: Request, res: Response) => {
   const { id: rawId } = req.params;
 
   const id = parseInt(Array.isArray(rawId) ? rawId[0] : rawId, 10);
 
   try {
-    const emergency = await getEmergencyById(id);
-    if (!emergency) {
+    const emergencyType = await getEmergencyTypeById(id);
+    if (!emergencyType) {
       res.status(404).json({ error: 'Emergency not found' });
       return;
     }
-    res.json(emergency.toJSON());
+    res.json(emergencyType.toJSON());
   } catch (error) {
-    console.error('Failed to fetch emergency:', error);
-    res.status(500).json({ error: 'Failed to fetch emergency' });
+    console.error('Failed to fetch emergencyType:', error);
+    res.status(500).json({ error: 'Failed to fetch emergencyType' });
   }
 });
 
-// POST /api/emergencies - create a new emergency { name: string }
-emergencyRouter.post('/', async (req: Request, res: Response) => {
+// POST /api/emergencyTypes - create a new emergencyType { name: string }
+emergencyTypeRouter.post('/', async (req: Request, res: Response) => {
   const { name } = req.body ?? {};
 
   if (typeof name !== 'string' || name.trim().length === 0) {
@@ -43,16 +43,16 @@ emergencyRouter.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const emergency = await createEmergency(name.trim());
-    res.status(201).json(emergency.toJSON());
+    const emergencyType = await createEmergencyType(name.trim());
+    res.status(201).json(emergencyType.toJSON());
   } catch (error) {
-    console.error('Failed to create emergency:', error);
-    res.status(500).json({ error: 'Failed to create emergency' });
+    console.error('Failed to create emergencyType:', error);
+    res.status(500).json({ error: 'Failed to create emergencyType' });
   }
 });
 
-// UPDATE /api/emergencies/:id - update an existing emergency { name: string }
-emergencyRouter.put('/:id', async (req: Request, res: Response) => {
+// UPDATE /api/emergencyTypes/:id - update an existing emergencyType { name: string }
+emergencyTypeRouter.put('/:id', async (req: Request, res: Response) => {
   const { id: rawId } = req.params;
   const { name } = req.body ?? {};
 
@@ -64,33 +64,33 @@ emergencyRouter.put('/:id', async (req: Request, res: Response) => {
   const id = parseInt(Array.isArray(rawId) ? rawId[0] : rawId, 10);
   
   try {
-    const emergency = await updateEmergency(id, name.trim());
-    if (!emergency) {
-      res.status(404).json({ error: 'Emergency not found' });
+    const emergencyType = await updateEmergencyType(id, name.trim());
+    if (!emergencyType) {
+      res.status(404).json({ error: 'Emergency type not found' });
       return;
     }
-    res.json(emergency.toJSON());
+    res.json(emergencyType.toJSON());
   } catch (error) {
-    console.error('Failed to update emergency:', error);
-    res.status(500).json({ error: 'Failed to update emergency' });
+    console.error('Failed to update emergencyType type:', error);
+    res.status(500).json({ error: 'Failed to update emergencyType type' });
   }
 });
 
-// DELETE /api/emergencies/:id - delete an existing emergency
-emergencyRouter.delete('/:id', async (req: Request, res: Response) => {
+// DELETE /api/emergencyTypes/:id - delete an existing emergencyType
+emergencyTypeRouter.delete('/:id', async (req: Request, res: Response) => {
   const { id: rawId } = req.params;
 
   const id = parseInt(Array.isArray(rawId) ? rawId[0] : rawId, 10);
 
   try {
-    const success = await deleteEmergency(id);
+    const success = await deleteEmergencyType(id);
     if (!success) {
-      res.status(404).json({ error: 'Emergency not found' });
+      res.status(404).json({ error: 'Emergency type not found' });
       return;
     }
     res.status(204).send();
   } catch (error) {
-    console.error('Failed to delete emergency:', error);
-    res.status(500).json({ error: 'Failed to delete emergency' });
+    console.error('Failed to delete emergencyType:', error);
+    res.status(500).json({ error: 'Failed to delete emergencyType' });
   }
 });

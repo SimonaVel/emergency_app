@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'package:emergency_app/services/emergency_service.dart';
+import 'package:emergency_app/services/emergency_type_service.dart';
 
 /// A screen (opened as a new page/window) with a form to add a new
 /// Emergency record via the backend API.
-class AddEmergencyScreen extends StatefulWidget {
-  const AddEmergencyScreen({super.key});
+class AddEmergencyTypeScreen extends StatefulWidget {
+  const AddEmergencyTypeScreen({super.key});
 
   @override
-  State<AddEmergencyScreen> createState() => _AddEmergencyScreenState();
+  State<AddEmergencyTypeScreen> createState() => _AddEmergencyTypeScreenState();
 }
 
-class _AddEmergencyScreenState extends State<AddEmergencyScreen> {
+class _AddEmergencyTypeScreenState extends State<AddEmergencyTypeScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   bool _isSubmitting = false;
@@ -30,13 +30,13 @@ class _AddEmergencyScreenState extends State<AddEmergencyScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      await EmergencyService.createEmergency(_nameController.text.trim());
+      await EmergencyTypeService.createEmergencyType(_nameController.text.trim());
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save emergency: $error')),
+        SnackBar(content: Text('Could not save emergency type: $error')),
       );
     } finally {
       if (mounted) {
@@ -48,7 +48,7 @@ class _AddEmergencyScreenState extends State<AddEmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add emergency')),
+      appBar: AppBar(title: const Text('Add emergency type')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -60,7 +60,7 @@ class _AddEmergencyScreenState extends State<AddEmergencyScreen> {
                 controller: _nameController,
                 autofocus: true,
                 decoration: const InputDecoration(
-                  labelText: 'Emergency name',
+                  labelText: 'Emergency type name',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
