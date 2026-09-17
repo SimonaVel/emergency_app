@@ -24,6 +24,21 @@ class EmergencyService {
     );
   }
 
+  static Future<Emergency> fetchEmergency(int id) async {
+    final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencies/$id');
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      return Emergency.fromJson(decoded);
+    }
+
+    throw Exception(
+      'Failed to load emergency (status ${response.statusCode}): ${response.body}',
+    );
+  }
+
   static Future<Map<String, dynamic>> createEmergency(String name) async {
     final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencies');
 
@@ -39,6 +54,38 @@ class EmergencyService {
 
     throw Exception(
       'Failed to create emergency (status ${response.statusCode}): ${response.body}',
+    );
+  }
+
+  static Future<bool> updateEmergency(int id, String name) async {
+    final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencies/$id');
+
+    final response = await http.put(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'name': name}),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+
+    throw Exception(
+      'Failed to update emergency (status ${response.statusCode}): ${response.body}',
+    );
+  }
+
+  static Future<bool> deleteEmergency(int id) async {
+    final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencies/$id');
+
+    final response = await http.delete(uri);
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+
+    throw Exception(
+      'Failed to delete emergency (status ${response.statusCode}): ${response.body}',
     );
   }
 }

@@ -33,3 +33,22 @@ export async function getEmergencyById(id: number): Promise<Emergency | null> {
   const row = rows[0];
   return row ? new Emergency(row.id, row.name) : null;
 }
+
+export async function updateEmergency(id: number, name: string): Promise<Emergency | null> {
+  const [result] = await pool.query<ResultSetHeader>(
+    `UPDATE \`${table}\` SET name = ? WHERE id = ?`,
+    [name, id]
+  );
+  if (result.affectedRows === 0) {
+    return null; // No emergency found with the given ID
+  }
+  return new Emergency(id, name);
+}
+
+export async function deleteEmergency(id: number): Promise<boolean> {
+  const [result] = await pool.query<ResultSetHeader>(
+    `DELETE FROM \`${table}\` WHERE id = ?`,
+    [id]
+  );
+  return result.affectedRows > 0;
+}
