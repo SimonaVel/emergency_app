@@ -5,12 +5,13 @@ import path from 'node:path';
 import { env } from '../config/env.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SEED_FILE_PATH = path.join(__dirname, 'seed_emergency_types.sql');
+const SEED_FILE_PATH = path.join(__dirname, 'seed_emergency_data.sql');
+const SCHEMA_FILE_PATH = path.join(__dirname, 'schema.sql');
 
 /**
  * Creates the "emergency_db" MySQL database (if it doesn't already exist),
  * the table backing the Emergency entity, and seeds it with the default
- * emergency types from seed_emergency_types.sql.
+ * emergency types from seed_emergency_data.sql.
  *
  * This connects without selecting a database first, since the target
  * database may not exist yet.
@@ -32,13 +33,7 @@ export async function initDatabase(): Promise<void> {
 
     await connection.changeUser({ database: env.mysql.database });
 
-    await connection.query(
-      `CREATE TABLE IF NOT EXISTS \`${env.mysql.emergenciesTable}\` (
-         id INT AUTO_INCREMENT PRIMARY KEY,
-         name VARCHAR(255) NOT NULL
-       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
-    );
-
+    await createSchema(connection);
     await seedEmergencyTypes(connection);
   } finally {
     await connection.end();
@@ -46,21 +41,50 @@ export async function initDatabase(): Promise<void> {
 }
 
 /**
- * Loads the default emergency types from seed_emergency_types.sql into the
+ * Creates all application tables from schema.sql. The connection is set up
+ * with multipleStatements disabled, so the file is split into individual
+ * `CREATE TABLE` statements and run one at a time, in the order they appear
+ * (which also gives the correct order for their foreign key dependencies).
+ */
+async function createSchema(connection: Connection): Promise<void> {
+  await runSqlFile(connection, SCHEMA_FILE_PATH);
+}
+
+/**
+ * Reads a .sql file and runs its statements one at a time, since the
+ * connection is set up with multipleStatements disabled.
+ */
+async function runSqlFile(connection: Connection, filePath: string): Promise<void> {
+  const sql = await readFile(filePath, 'utf-8');
+  const withoutComments = sql
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('--'))
+    .join('\n');
+  const statements = withoutComments
+    .split(';')
+    .map((statement) => statement.trim())
+    .filter((statement) => statement.length > 0);
+
+  for (const statement of statements) {
+    await connection.query(statement);
+  }
+}
+
+/**
+ * Loads the default emergency types from seed_emergency_data.sql into the
  * emergencies table. Runs on every initDatabase() call, but only actually
  * inserts while the table is still empty, so it never creates duplicates.
  */
 async function seedEmergencyTypes(connection: Connection): Promise<void> {
   const [rows] = await connection.query<RowDataPacket[]>(
-    `SELECT COUNT(*) AS count FROM \`${env.mysql.emergenciesTable}\``
+    `SELECT COUNT(*) AS count FROM \`emergency_types\``
   );
   const count = Number(rows[0]?.count ?? 0);
   if (count > 0) {
     return;
   }
 
-  const seedSql = await readFile(SEED_FILE_PATH, 'utf-8');
-  await connection.query(seedSql);
+  await runSqlFile(connection, SEED_FILE_PATH);
 }
 
 // Allow running this file directly: `npm run db:init`
@@ -68,7 +92,7 @@ const isDirectRun = process.argv[1]?.endsWith('initDb.ts') || process.argv[1]?.e
 if (isDirectRun) {
   initDatabase()
     .then(() => {
-      console.log(`Database "${env.mysql.database}" and table "${env.mysql.emergenciesTable}" are ready.`);
+      console.log(`Database "${env.mysql.database}" and table "emergency_types" are ready.`);
       process.exit(0);
     })
     .catch((error) => {

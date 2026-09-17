@@ -15,7 +15,6 @@ export const env = {
     database: required('MYSQL_DATABASE', 'emergency_db'),
     user: required('MYSQL_USERNAME'),
     password: required('MYSQL_PASSWORD'),
-    emergenciesTable: required('MYSQL_EMERGENCIES_TABLE', 'emergencies'),
   },
   port: Number(process.env.PORT ?? 3000),
 };

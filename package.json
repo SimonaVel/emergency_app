@@ -3,7 +3,7 @@
   "scripts": {
     "db:init": "tsx backend/src/database/initDb.ts",
     "backend:dev": "tsx watch backend/src/index.ts",
-    "backend:build": "tsc && mkdir -p dist/backend/src/database && cp backend/src/database/seed_emergency_types.sql dist/backend/src/database/",
+    "backend:build": "tsc && mkdir -p dist/backend/src/database && cp backend/src/database/seed_emergency_data.sql dist/backend/src/database/",
     "backend:start": "node dist/backend/src/index.js"
   },
   "dependencies": {
