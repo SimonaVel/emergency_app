@@ -6,19 +6,19 @@
 
 CREATE TABLE IF NOT EXISTS `emergency_types` (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `emergencies` (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     emergency_type_id BIGINT,
     FOREIGN KEY (emergency_type_id) REFERENCES `emergency_types` (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `incident_statuses` (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    status VARCHAR(255) NOT NULL
+    status VARCHAR(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `incident` (

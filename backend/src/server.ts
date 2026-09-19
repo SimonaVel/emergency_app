@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { emergencyTypeRouter } from './routes/emergencyRoutes.js';
+import { emergencyTypeRouter } from './routes/emergencyTypeRoutes.js';
 
 export function createServer() {
   const app = express();
