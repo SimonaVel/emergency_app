@@ -33,5 +33,5 @@ INSERT INTO emergencies (name, emergency_type_id) VALUES
   ('Child abuse', 4),
   ('Radiation', 6),
   ('Road traffic accident', 6),
-  ('RadiIndustrial accident', 6),
+  ('Industrial accident', 6),
   ('Suspicion for anthrax or similar biological agents', 6);

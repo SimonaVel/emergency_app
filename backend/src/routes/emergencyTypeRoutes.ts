@@ -1,10 +1,31 @@
 import { Router, type Request, type Response } from 'express';
-import { createEmergencyType, getAllEmergencyTypes, updateEmergencyType, deleteEmergencyType, getEmergencyTypeById } from '../services/emergencyService.js';
+import { createEmergencyType, getAllEmergencyTypes, updateEmergencyType, deleteEmergencyType, getEmergencyTypeById, getEmergencyTypeByName } from '../services/emergencyTypeService.js';
 
 export const emergencyTypeRouter = Router();
 
 // GET /api/emergencyTypes - list all emergencyTypes
-emergencyTypeRouter.get('/', async (_req: Request, res: Response) => {
+// GET /api/emergencyTypes?name=X - get an emergency type by name
+emergencyTypeRouter.get('/', async (req: Request, res: Response) => {
+  const { name } = req.query;
+  if(name !== undefined) {
+    if (typeof name !== 'string' || name.trim().length === 0) {
+      res.status(400).json({ error: 'Query parameter "name" must be a non-empty string' });
+      return;
+    }
+    try {
+          const emergency = await getEmergencyTypeByName(name);
+          if (!emergency) {
+            res.status(404).json({ error: 'Emergency not found' });
+            return;
+          }
+          res.json(emergency.toJSON());
+        } catch (error) {
+          console.error('Failed to fetch emergency:', error);
+          res.status(500).json({ error: 'Failed to fetch emergency' });
+        }
+        return;
+  }
+
   try {
     const emergencyTypes = await getAllEmergencyTypes();
     res.json(emergencyTypes.map((emergencyType) => emergencyType.toJSON()));

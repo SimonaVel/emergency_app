@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { emergencyTypeRouter } from './routes/emergencyTypeRoutes.js';
+import { emergencyRouter } from './routes/emergencyRoutes.js';
 
 export function createServer() {
   const app = express();
@@ -13,6 +14,7 @@ export function createServer() {
   });
 
   app.use('/api/emergencyTypes', emergencyTypeRouter);
+  app.use('/api/emergencies', emergencyRouter);
 
   return app;
 }
