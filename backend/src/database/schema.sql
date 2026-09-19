@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `reporter` (
 
 CREATE TABLE IF NOT EXISTS `incidents_have_reporters` (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255),
     incident_id BIGINT NOT NULL,
     reporter_id BIGINT NOT NULL,
     FOREIGN KEY (`incident_id`) REFERENCES `incident` (`id`),

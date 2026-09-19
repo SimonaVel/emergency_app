@@ -34,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<EmergencyType>> _emergencyTypesFuture;
+  late Future<List<Emergency>> _emergencyTypesFuture;
 
   @override
   void initState() {
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: FutureBuilder<List<EmergencyType>>(
+        child: FutureBuilder<List<Emergency>>(
           future: _emergencyTypesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return const Text('Could not load emergency types. Please run the backend server and try again. (npm run backend:dev)');
             }
 
-            final emergencyTypes = snapshot.data ?? const <EmergencyType>[];
+            final emergencyTypes = snapshot.data ?? const <Emergency>[];
             if (emergencyTypes.isEmpty) {
               return const Text('No emergency types yet.');
             }

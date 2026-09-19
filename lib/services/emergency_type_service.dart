@@ -7,7 +7,7 @@ import 'package:emergency_app/utils/parameters.dart';
 
 /// Talks to the backend's /api/emergencyTypes endpoint.
 class EmergencyTypeService {
-  static Future<List<EmergencyType>> fetchEmergencyTypes() async {
+  static Future<List<Emergency>> fetchEmergencyTypes() async {
     final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencyTypes');
 
     final response = await http.get(uri);
@@ -15,7 +15,7 @@ class EmergencyTypeService {
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body) as List<dynamic>;
       return decoded
-          .map((item) => EmergencyType.fromJson(item as Map<String, dynamic>))
+          .map((item) => Emergency.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
@@ -24,14 +24,14 @@ class EmergencyTypeService {
     );
   }
 
-  static Future<EmergencyType> fetchEmergencyType(int id) async {
+  static Future<Emergency> fetchEmergencyType(int id) async {
     final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencyTypes/$id');
 
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-      return EmergencyType.fromJson(decoded);
+      return Emergency.fromJson(decoded);
     }
 
     throw Exception(

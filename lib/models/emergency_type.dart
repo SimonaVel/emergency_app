@@ -1,12 +1,12 @@
-/// Mirrors the backend's Emergency entity (id + name).
-class EmergencyType {
+/// Mirrors the backend's EmergencyType entity (id + name).
+class Emergency {
   final int id;
   final String name;
 
-  const EmergencyType({required this.id, required this.name});
+  const Emergency({required this.id, required this.name});
 
-  factory EmergencyType.fromJson(Map<String, dynamic> json) {
-    return EmergencyType(
+  factory Emergency.fromJson(Map<String, dynamic> json) {
+    return Emergency(
       id: json['id'] as int,
       name: json['name'] as String,
     );

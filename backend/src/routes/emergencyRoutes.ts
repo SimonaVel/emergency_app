@@ -162,7 +162,7 @@ emergencyRouter.delete('/:id', async (req: Request, res: Response) => {
   try {
     const success = await deleteEmergency(id);
     if (!success) {
-      res.status(404).json({ error: 'Emergency type not found' });
+      res.status(404).json({ error: 'Emergency not found' });
       return;
     }
     res.status(204).send();

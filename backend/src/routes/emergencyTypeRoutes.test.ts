@@ -43,6 +43,27 @@ describe('GET /api/emergencyTypes', () => {
   });
 });
 
+describe('GET /api/emergencyTypes?name=X', () => {
+  it('returns the emergency type when name exists', async () => {
+    const name = 'Fire';
+    await request(app).post('/api/emergencyTypes').send({ name: name });
+
+    const res = await request(app).get(`/api/emergencyTypes?name=${name}`);
+    expect(res.status).toBe(200);
+    expect(res.body.name).toEqual('Fire');
+  })
+
+  it('returns the emergency type when name does not exist', async () => {
+    const name = 'Fire';
+    await request(app).post('/api/emergencyTypes').send({ name: name });
+
+    const res = await request(app).get(`/api/emergencyTypes?name=Not${name}`);
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: 'Emergency not found' });
+  })
+
+})
+
 describe('GET /api/emergencyTypes/:id', () => {
   it('returns the emergency type when it exists', async () => {
     const created = await request(app).post('/api/emergencyTypes').send({ name: 'Fire' });

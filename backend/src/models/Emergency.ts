@@ -15,7 +15,7 @@ export class Emergency {
         return {
             id: this.id,
             name: this.name,
-            emergencyType: this.emergencyType
+            emergencyType: this.emergencyType ? this.emergencyType.id : null
         };
     }
 }
