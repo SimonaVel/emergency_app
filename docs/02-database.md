@@ -1,3 +1,4 @@
 # Database
 ## Structure
-![alt text](image.png)
+![alt text](db_schema.png)
+*[View original schema in DrawSQL](https://drawsql.app/teams/new-bulgarian-university/diagrams/emergency-app)*

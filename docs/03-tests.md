@@ -21,3 +21,7 @@
 | Vitest                    | ```npm run backend:test``` |
 | Playwright                | ```npx playwright test```  |
 
+## CI/DC
+CI/CD workflow is configured for every push and pull request to the **main** branch.
+All API tests (*vitest*) are executed using GitHub Actions.
+View runs [here](https://github.com/SimonaVel/emergency_app/actions)

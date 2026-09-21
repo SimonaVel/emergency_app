@@ -1,5 +1,4 @@
 # Architecture
-Can be found here [gitgram](https://gitdiagram.com/simonavel/emergency_app)
 
 ```mermaid
 flowchart TD
@@ -71,3 +70,4 @@ class node_backend_index,node_server,node_emergency_routes,node_type_routes tone
 class node_emergency_service,node_type_service,node_emergency_model,node_type_model toneMint
 class node_db_init,node_pool,node_mysql toneRose
 ```
+*[View original schema in gitgram](https://gitdiagram.com/simonavel/emergency_app)*
