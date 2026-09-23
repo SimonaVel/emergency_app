@@ -67,7 +67,7 @@ class EmergencyService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'name': name,
-        if (emergencyType != null) 'emergencyType': emergencyType,
+        'emergencyType': ?emergencyType,
       }),
     );
 
