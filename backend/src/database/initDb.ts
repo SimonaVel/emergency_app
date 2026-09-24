@@ -5,6 +5,7 @@ import path from 'node:path';
 import { env } from '../config/env.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SCHEMA_FILE_PATH = path.join(__dirname, 'schema.sql');
 const SEED_FILE_PATH = path.join(__dirname, 'seed_emergency_types.sql');
 
 /**
