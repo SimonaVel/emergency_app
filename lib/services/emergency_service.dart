@@ -24,6 +24,23 @@ class EmergencyService {
     );
   }
 
+  static Future<Emergency> fetchEmergencyByName(String name) async {
+    final uri = Uri.parse(
+      '${Parameters.apiBaseUrl}/api/emergencies',
+    ).replace(queryParameters: {'name': name});
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      return Emergency.fromJson(decoded);
+    }
+
+    throw Exception(
+      'Failed to load emergency (status ${response.statusCode}): ${response.body}',
+    );
+  }
+
   static Future<Emergency> fetchEmergency(int id) async {
     final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencies/$id');
 
@@ -39,13 +56,19 @@ class EmergencyService {
     );
   }
 
-  static Future<Map<String, dynamic>> createEmergency(String name) async {
+  static Future<Map<String, dynamic>> createEmergency(
+    String name, {
+    int? emergencyType,
+  }) async {
     final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencies');
 
     final response = await http.post(
       uri,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'name': name}),
+      body: jsonEncode({
+        'name': name,
+        'emergencyType': ?emergencyType,
+      }),
     );
 
     if (response.statusCode == 201) {
@@ -57,13 +80,24 @@ class EmergencyService {
     );
   }
 
-  static Future<bool> updateEmergency(int id, String name) async {
+  /// Updates an emergency. Both fields are optional, matching the backend:
+  /// omitting [name] leaves it unchanged, omitting [emergencyType] leaves
+  /// the type unchanged, and passing [clearEmergencyType] clears it.
+  static Future<bool> updateEmergency(
+    int id, {
+    String? name,
+    int? emergencyType,
+    bool clearEmergencyType = false,
+  }) async {
     final uri = Uri.parse('${Parameters.apiBaseUrl}/api/emergencies/$id');
 
     final response = await http.put(
       uri,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'name': name}),
+      body: jsonEncode({
+        'name': ?name,
+        'emergencyType': ?emergencyType,
+      }),
     );
 
     if (response.statusCode == 200) {
@@ -80,7 +114,7 @@ class EmergencyService {
 
     final response = await http.delete(uri);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 204) {
       return true;
     }
 

@@ -3,7 +3,7 @@
 -- Loaded automatically by initDb.ts every time the database is
 -- initialized, but only while it does not exist
 
-INSERT INTO emergencies (name) VALUES
+INSERT INTO emergency_types (name) VALUES
   ('Other'),
   ('Medical emergency'),
   ('Natural disaster'),

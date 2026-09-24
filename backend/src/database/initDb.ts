@@ -5,13 +5,13 @@ import path from 'node:path';
 import { env } from '../config/env.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SEED_FILE_PATH = path.join(__dirname, 'seed_emergency_data.sql');
 const SCHEMA_FILE_PATH = path.join(__dirname, 'schema.sql');
-const SEED_FILE_PATH = path.join(__dirname, 'seed_emergency_types.sql');
 
 /**
  * Creates the "emergency_db" MySQL database (if it doesn't already exist),
  * the table backing the Emergency entity, and seeds it with the default
- * emergency types from seed_emergency_types.sql.
+ * emergency types from seed_emergency_data.sql.
  *
  * This connects without selecting a database first, since the target
  * database may not exist yet.
@@ -87,15 +87,14 @@ async function seedEmergencyDB(connection: Connection, databaseExisted: boolean)
   }
 
   const [rows] = await connection.query<RowDataPacket[]>(
-    `SELECT COUNT(*) AS count FROM \`${env.mysql.emergenciesTable}\``
+    `SELECT COUNT(*) AS count FROM \`emergency_types\``
   );
   const count = Number(rows[0]?.count ?? 0);
   if (count > 0) {
     return;
   }
 
-  const seedSql = await readFile(SEED_FILE_PATH, 'utf-8');
-  await connection.query(seedSql);
+  await runSqlFile(connection, SEED_FILE_PATH);
 }
 
 // Allow running this file directly: `npm run db:init`

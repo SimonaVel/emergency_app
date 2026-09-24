@@ -9,22 +9,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:emergency_app/main.dart';
+import 'package:emergency_app/screens/add_emergency_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('add_emergency_type_button redirects sucessfully', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // check the main page has loaded
+    expect(find.text('211 Emergency application home page'), findsOneWidget);
+    expect(find.byKey(const Key('add_emergency_type_button')), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // press button
+    await tester.tap(find.byKey(const Key('add_emergency_type_button')));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // check if redirection has been executed
+    expect(find.byType(AddEmergencyTypeScreen), findsOneWidget);
+    expect(find.text('Add emergency type'), findsOneWidget);
   });
 }

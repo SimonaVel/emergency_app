@@ -14,6 +14,7 @@ export function createServer() {
     res.json({ status: 'ok' });
   });
 
+  app.use('/api/emergencyTypes', emergencyTypeRouter);
   app.use('/api/emergencies', emergencyRouter);
   app.use('/api/incidentStatuses', incidentStatusRouter);
 
