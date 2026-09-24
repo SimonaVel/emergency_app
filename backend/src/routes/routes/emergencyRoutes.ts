@@ -1,5 +1,11 @@
 import { Router, type Request, type Response } from 'express';
+<<<<<<< Updated upstream:backend/src/routes/emergencyRoutes.ts
 import { createEmergency, getAllEmergencies, updateEmergency, deleteEmergency, getEmergencyById } from '../services/emergencyService.js';
+=======
+import { createEmergency, getAllEmergencies, getEmergencyById, getEmergencyByName, updateEmergency, deleteEmergency } from '../../service/emergencyService.js'
+import { getEmergencyTypeById, getEmergencyTypeByName } from '../../service/emergencyTypeService.js';
+import { DEFAULT_EMERGENCY_TYPE_NAME } from '../../config/parameters.js';
+>>>>>>> Stashed changes:backend/src/routes/routes/emergencyRoutes.ts
 
 export const emergencyRouter = Router();
 

@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import { emergencyRouter } from './routes/emergencyRoutes.js';
+import { emergencyTypeRouter } from './routes/routes/emergencyTypeRoutes.js';
+import { emergencyRouter } from './routes/routes/emergencyRoutes.js';
+import { incidentStatusRouter } from './routes/routes/incidentStatusRoute.js';
 
 export function createServer() {
   const app = express();
@@ -13,6 +15,7 @@ export function createServer() {
   });
 
   app.use('/api/emergencies', emergencyRouter);
+  app.use('/api/incidentStatuses', incidentStatusRouter);
 
   return app;
 }
