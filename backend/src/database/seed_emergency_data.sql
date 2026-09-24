@@ -10,8 +10,6 @@ INSERT INTO emergency_types (name) VALUES
   ('Abuse'),
   ('Minor missing'),
   ('Catastrophic event');
-<<<<<<< Updated upstream:backend/src/database/seed_emergency_types.sql
-=======
 
 
 INSERT INTO emergencies (name, emergency_type_id) VALUES
@@ -39,4 +37,3 @@ INSERT INTO incident_statuses (name) VALUES
   ('Rejected'),
   ('Help sent'),
   ('Resolved');
->>>>>>> Stashed changes:backend/src/database/seed_emergency_data.sql
