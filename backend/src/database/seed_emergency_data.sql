@@ -31,7 +31,7 @@ INSERT INTO emergencies (name, emergency_type_id) VALUES
   ('Industrial accident', 6),
   ('Suspicion for anthrax or similar biological agents', 6);
 
-INSERT INTO incident_statuses (name) VALUES
+INSERT IGNORE INTO incident_statuses (name) VALUES
   ('Submitted'),
   ('Under investigation'),
   ('Rejected'),
