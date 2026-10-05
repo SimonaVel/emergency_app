@@ -62,7 +62,7 @@ describe('GET /api/emergencyTypes?name=X', () => {
     expect(res.body).toEqual({ error: 'Emergency not found' });
   })
 
-})
+});
 
 describe('GET /api/emergencyTypes/:id', () => {
   it('returns the emergency type when it exists', async () => {
@@ -101,6 +101,7 @@ describe('POST /api/emergencyTypes', () => {
     expect(res.body.name).toBe('Storm');
   });
 
+  // Test multiple negaative cases using it.each
   it.each([
     ['missing field', {}],
     ['empty string', { name: '' }],

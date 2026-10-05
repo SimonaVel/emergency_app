@@ -13,7 +13,7 @@ INSERT INTO emergency_types (name) VALUES
 
 
 INSERT INTO emergencies (name, emergency_type_id) VALUES
-  ('Other', 1), 
+  ('Other', 1),
   ('Death', 2),
   ('Lack of breathing', 2),
   ('Critical physical trauma w blood loss', 2),

@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { emergencyTypeRouter } from './routes/routes/emergencyTypeRoutes.js';
 import { emergencyRouter } from './routes/routes/emergencyRoutes.js';
-import { incidentStatusRouter } from './routes/routes/incidentStatusRoute.js';
+import { incidentStatusRouter } from './routes/routes/incidentStatusRoutes.js';
 
 export function createServer() {
   const app = express();
