@@ -3,8 +3,19 @@ import request from "supertest";
 import { createServer } from "../../server.js";
 import { pool } from "../../database/pool.js";
 import { RecordNotFoundException } from "../../exceptions/RecordNotFoundException.js";
+import { createEmergencyType } from "./testHelpers.js";
 
 const app = createServer();
+
+const createType = (name: string) => createEmergencyType(app, name);
+
+async function createEmergency(name: string, emergencyType: number) {
+  const response = await request(app)
+    .post("/api/emergencies")
+    .send({ name, emergencyType });
+  expect(response.status).toBe(201);
+  return response.body.id as number;
+}
 
 beforeEach(async () => {
   // `emergencies` has a FK on `emergency_types`, so its (seeded) rows must
@@ -18,11 +29,6 @@ afterAll(async () => {
   await pool.end();
 });
 
-async function createType(name: string) {
-  const res = await request(app).post("/api/emergencyTypes").send({ name });
-  return res.body.id as number;
-}
-
 describe("GET /api/emergencies", () => {
   it("returns an empty array when none exist", async () => {
     const res = await request(app).get("/api/emergencies");
@@ -32,12 +38,8 @@ describe("GET /api/emergencies", () => {
 
   it("returns all emergencies, most recently created first", async () => {
     const typeId = await createType("Fire");
-    await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
-    await request(app)
-      .post("/api/emergencies")
-      .send({ name: "Forest fire", emergencyType: typeId });
+    await createEmergency("House fire", typeId);
+    await createEmergency("Forest fire", typeId);
 
     const res = await request(app).get("/api/emergencies");
 
@@ -52,9 +54,7 @@ describe("GET /api/emergencies", () => {
 describe("GET /api/emergencies?name=X", () => {
   it("returns the emergency when the name exists", async () => {
     const typeId = await createType("Fire");
-    await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    await createEmergency("House fire", typeId);
 
     const res = await request(app).get("/api/emergencies?name=House fire");
 
@@ -81,15 +81,13 @@ describe("GET /api/emergencies?name=X", () => {
 describe("GET /api/emergencies/:id", () => {
   it("returns the emergency when it exists", async () => {
     const typeId = await createType("Fire");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    const emergencyId = await createEmergency("House fire", typeId);
 
-    const res = await request(app).get(`/api/emergencies/${created.body.id}`);
+    const res = await request(app).get(`/api/emergencies/${emergencyId}`);
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      id: created.body.id,
+      id: emergencyId,
       name: "House fire",
       emergencyType: typeId,
     });
@@ -191,17 +189,15 @@ describe("POST /api/emergencies", () => {
 describe("PUT /api/emergencies/:id", () => {
   it("updates the name and keeps the existing emergency type", async () => {
     const typeId = await createType("Fire");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    const emergencyId = await createEmergency("House fire", typeId);
 
     const res = await request(app)
-      .put(`/api/emergencies/${created.body.id}`)
+      .put(`/api/emergencies/${emergencyId}`)
       .send({ name: "Kitchen fire" });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      id: created.body.id,
+      id: emergencyId,
       name: "Kitchen fire",
       emergencyType: typeId,
     });
@@ -210,17 +206,15 @@ describe("PUT /api/emergencies/:id", () => {
   it("updates the emergency type and keeps the existing name", async () => {
     const fireId = await createType("Fire");
     const floodId = await createType("Flood");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: fireId });
+    const emergencyId = await createEmergency("House fire", fireId);
 
     const res = await request(app)
-      .put(`/api/emergencies/${created.body.id}`)
+      .put(`/api/emergencies/${emergencyId}`)
       .send({ emergencyType: floodId });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      id: created.body.id,
+      id: emergencyId,
       name: "House fire",
       emergencyType: floodId,
     });
@@ -229,17 +223,15 @@ describe("PUT /api/emergencies/:id", () => {
   it("updates both the name and the emergency type", async () => {
     const fireId = await createType("Fire");
     const floodId = await createType("Flood");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: fireId });
+    const emergencyId = await createEmergency("House fire", fireId);
 
     const res = await request(app)
-      .put(`/api/emergencies/${created.body.id}`)
+      .put(`/api/emergencies/${emergencyId}`)
       .send({ name: "River flood", emergencyType: floodId });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      id: created.body.id,
+      id: emergencyId,
       name: "River flood",
       emergencyType: floodId,
     });
@@ -247,17 +239,15 @@ describe("PUT /api/emergencies/:id", () => {
 
   it("clears the emergency type when emergencyType is null", async () => {
     const typeId = await createType("Fire");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    const emergencyId = await createEmergency("House fire", typeId);
 
     const res = await request(app)
-      .put(`/api/emergencies/${created.body.id}`)
+      .put(`/api/emergencies/${emergencyId}`)
       .send({ emergencyType: null });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      id: created.body.id,
+      id: emergencyId,
       name: "House fire",
       emergencyType: null,
     });
@@ -289,12 +279,10 @@ describe("PUT /api/emergencies/:id", () => {
     ["non-string", { name: 123 }],
   ])("rejects a request with %s name", async (_label, body) => {
     const typeId = await createType("Fire");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    const emergencyId = await createEmergency("House fire", typeId);
 
     const res = await request(app)
-      .put(`/api/emergencies/${created.body.id}`)
+      .put(`/api/emergencies/${emergencyId}`)
       .send(body);
 
     expect(res.status).toBe(400);
@@ -308,12 +296,10 @@ describe("PUT /api/emergencies/:id", () => {
     ["a float", 1.5],
   ])("rejects %s emergencyType", async (_label, emergencyType) => {
     const typeId = await createType("Fire");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    const emergencyId = await createEmergency("House fire", typeId);
 
     const res = await request(app)
-      .put(`/api/emergencies/${created.body.id}`)
+      .put(`/api/emergencies/${emergencyId}`)
       .send({ emergencyType });
 
     expect(res.status).toBe(400);
@@ -324,12 +310,10 @@ describe("PUT /api/emergencies/:id", () => {
 
   it("rejects an emergencyType id that does not exist", async () => {
     const typeId = await createType("Fire");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    const emergencyId = await createEmergency("House fire", typeId);
 
     const res = await request(app)
-      .put(`/api/emergencies/${created.body.id}`)
+      .put(`/api/emergencies/${emergencyId}`)
       .send({ emergencyType: 999999 });
 
     expect(res.status).toBe(400);
@@ -340,17 +324,15 @@ describe("PUT /api/emergencies/:id", () => {
 describe("DELETE /api/emergencies/:id", () => {
   it("deletes an existing emergency", async () => {
     const typeId = await createType("Fire");
-    const created = await request(app)
-      .post("/api/emergencies")
-      .send({ name: "House fire", emergencyType: typeId });
+    const emergencyId = await createEmergency("House fire", typeId);
 
     const res = await request(app).delete(
-      `/api/emergencies/${created.body.id}`,
+      `/api/emergencies/${emergencyId}`,
     );
     expect(res.status).toBe(204);
 
     const fetched = await request(app).get(
-      `/api/emergencies/${created.body.id}`,
+      `/api/emergencies/${emergencyId}`,
     );
     expect(fetched.status).toBe(404);
   });

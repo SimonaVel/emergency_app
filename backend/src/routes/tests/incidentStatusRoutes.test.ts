@@ -3,6 +3,7 @@ import request from "supertest";
 import { createServer } from "../../server.js";
 import { pool } from "../../database/pool.js";
 import { RecordNotFoundException } from "../../exceptions/RecordNotFoundException.js";
+import { createIncidentStatus } from "./testHelpers.js";
 
 const app = createServer();
 
@@ -23,10 +24,8 @@ describe("GET /api/incidentStatuses", () => {
   });
 
   it("returns all incident statuses (ASC)", async () => {
-    await request(app)
-      .post("/api/incidentStatuses")
-      .send({ name: "Investigated" });
-    await request(app).post("/api/incidentStatuses").send({ name: "Reported" });
+    await createIncidentStatus(app, "Investigated");
+    await createIncidentStatus(app, "Reported");
 
     const res = await request(app).get("/api/incidentStatuses");
 
@@ -40,16 +39,14 @@ describe("GET /api/incidentStatuses", () => {
 
 describe("GET /api/incidentStatuses/:id", () => {
   it("returns the incident status when it exists", async () => {
-    const created = await request(app)
-      .post("/api/incidentStatuses")
-      .send({ name: "Investigated" });
+    const statusId = await createIncidentStatus(app, "Investigated");
 
     const res = await request(app).get(
-      `/api/incidentStatuses/${created.body.id}`,
+      `/api/incidentStatuses/${statusId}`,
     );
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ id: created.body.id, name: "Investigated" });
+    expect(res.body).toEqual({ id: statusId, name: "Investigated" });
   });
 
   it("returns 404 when the id does not exist", async () => {
@@ -62,7 +59,7 @@ describe("GET /api/incidentStatuses/:id", () => {
 describe("GET /api/incidentStatuses?name=X", () => {
   it("returns the incident status when name exists", async () => {
     const name = "Reported";
-    await request(app).post("/api/incidentStatuses").send({ name: name });
+    await createIncidentStatus(app, name);
 
     const res = await request(app).get(`/api/incidentStatuses?name=${name}`);
     expect(res.status).toBe(200);
@@ -71,7 +68,7 @@ describe("GET /api/incidentStatuses?name=X", () => {
 
   it("returns the incident status when name does not exist", async () => {
     const name = "Reported";
-    await request(app).post("/api/incidentStatuses").send({ name: name });
+    await createIncidentStatus(app, name);
 
     const res = await request(app).get(`/api/incidentStatuses?name=Not${name}`);
     expect(res.status).toBe(404);
@@ -108,16 +105,14 @@ describe("POST /api/incidentStatuses", () => {
 
 describe("PUT /api/incidentStatuses/:id", () => {
   it("updates an existing incident status", async () => {
-    const created = await request(app)
-      .post("/api/incidentStatuses")
-      .send({ name: "Submitted" });
+    const statusId = await createIncidentStatus(app, "Submitted");
 
     const res = await request(app)
-      .put(`/api/incidentStatuses/${created.body.id}`)
+      .put(`/api/incidentStatuses/${statusId}`)
       .send({ name: "Rejected" });
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ id: created.body.id, name: "Rejected" });
+    expect(res.body).toEqual({ id: statusId, name: "Rejected" });
   });
 
   it("returns 404 when the id does not exist", async () => {
@@ -130,12 +125,10 @@ describe("PUT /api/incidentStatuses/:id", () => {
   });
 
   it("rejects an invalid name", async () => {
-    const created = await request(app)
-      .post("/api/incidentStatuses")
-      .send({ name: "Submitted" });
+    const statusId = await createIncidentStatus(app, "Submitted");
 
     const res = await request(app)
-      .put(`/api/incidentStatuses/${created.body.id}`)
+      .put(`/api/incidentStatuses/${statusId}`)
       .send({ name: "" });
 
     expect(res.status).toBe(400);
@@ -144,17 +137,13 @@ describe("PUT /api/incidentStatuses/:id", () => {
 
 describe("DELETE /api/incidentStatuses/:id", () => {
   it("deletes an existing incident status", async () => {
-    const created = await request(app)
-      .post("/api/incidentStatuses")
-      .send({ name: "Submitted" });
+    const statusId = await createIncidentStatus(app, "Submitted");
 
-    const res = await request(app).delete(
-      `/api/incidentStatuses/${created.body.id}`,
-    );
+    const res = await request(app).delete(`/api/incidentStatuses/${statusId}`);
     expect(res.status).toBe(204);
 
     const fetched = await request(app).get(
-      `/api/incidentStatuses/${created.body.id}`,
+      `/api/incidentStatuses/${statusId}`,
     );
     expect(fetched.status).toBe(404);
   });
