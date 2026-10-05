@@ -1,75 +1,75 @@
-import type { RowDataPacket, ResultSetHeader } from 'mysql2';
-import { pool } from '../database/pool.js';
-import { IncidentStatus } from '../models/IncidentStatus.js';
+import type { RowDataPacket, ResultSetHeader } from "mysql2";
+import { pool } from "../database/pool.js";
+import { IncidentStatus } from "../models/IncidentStatus.js";
 
 interface IncidentStatusRow extends RowDataPacket {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 }
 
-const table = 'incident_statuses';
+const table = "incident_statuses";
 
 function toIncidentStatus(row: IncidentStatusRow): IncidentStatus {
-    return new IncidentStatus(row.id, row.name);
+  return new IncidentStatus(row.id, row.name);
 }
 
-export async function createIncidentStatus(name: string): Promise<IncidentStatus> {
+export async function createIncidentStatus(
+  name: string,
+): Promise<IncidentStatus> {
   const [result] = await pool.query<ResultSetHeader>(
     `INSERT INTO \`${table}\` (name) VALUES (?)`,
-    [name]
+    [name],
   );
-  return new IncidentStatus(
-    result.insertId, name
-  );
+  return new IncidentStatus(result.insertId, name);
 }
 
 export async function getAllIncidentStatuses(): Promise<IncidentStatus[]> {
-    const [rows] = await pool.execute<IncidentStatusRow[]>(
-        `SELECT id, name FROM ${table} ORDER BY id`,
-    );
+  const [rows] = await pool.execute<IncidentStatusRow[]>(
+    `SELECT id, name FROM ${table} ORDER BY id`,
+  );
 
-    return rows.map(toIncidentStatus);
+  return rows.map(toIncidentStatus);
 }
 
 export async function getIncidentStatusById(
-    id: number,
+  id: number,
 ): Promise<IncidentStatus | null> {
-    const [rows] = await pool.execute<IncidentStatusRow[]>(
-        `SELECT id, name FROM ${table} WHERE id = ? LIMIT 1`,
-        [id],
-    );
+  const [rows] = await pool.execute<IncidentStatusRow[]>(
+    `SELECT id, name FROM ${table} WHERE id = ? LIMIT 1`,
+    [id],
+  );
 
-    return rows.length > 0 ? toIncidentStatus(rows[0]) : null;
+  return rows.length > 0 ? toIncidentStatus(rows[0]) : null;
 }
 
 export async function getIncidentStatusByName(
-    name: string,
+  name: string,
 ): Promise<IncidentStatus | null> {
-    const [rows] = await pool.execute<IncidentStatusRow[]>(
-        `SELECT id, name FROM ${table} WHERE name = ? LIMIT 1`,
-        [name],
-    );
+  const [rows] = await pool.execute<IncidentStatusRow[]>(
+    `SELECT id, name FROM ${table} WHERE name = ? LIMIT 1`,
+    [name],
+  );
 
-    return rows.length > 0 ? toIncidentStatus(rows[0]) : null;
+  return rows.length > 0 ? toIncidentStatus(rows[0]) : null;
 }
 
 export async function updateIncidentStatus(
-    id: number,
-    name: string,
+  id: number,
+  name: string,
 ): Promise<IncidentStatus | null> {
-    const [result] = await pool.execute<ResultSetHeader>(
-        `UPDATE ${table} SET name = ? WHERE id = ?`,
-        [name, id],
-    );
+  const [result] = await pool.execute<ResultSetHeader>(
+    `UPDATE ${table} SET name = ? WHERE id = ?`,
+    [name, id],
+  );
 
-    return result.affectedRows > 0 ? getIncidentStatusById(id) : null;
+  return result.affectedRows > 0 ? getIncidentStatusById(id) : null;
 }
 
 export async function deleteIncidentStatus(id: number): Promise<boolean> {
-    const [result] = await pool.execute<ResultSetHeader>(
-        `DELETE FROM ${table} WHERE id = ?`,
-        [id],
-    );
+  const [result] = await pool.execute<ResultSetHeader>(
+    `DELETE FROM ${table} WHERE id = ?`,
+    [id],
+  );
 
-    return result.affectedRows > 0;
+  return result.affectedRows > 0;
 }

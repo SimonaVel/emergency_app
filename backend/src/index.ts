@@ -1,6 +1,6 @@
-import { initDatabase } from './database/initDb.js';
-import { createServer } from './server.js';
-import { env } from './config/env.js';
+import { initDatabase } from "./database/initDb.js";
+import { createServer } from "./server.js";
+import { env } from "./config/env.js";
 
 async function main() {
   await initDatabase();
@@ -13,6 +13,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('Failed to start backend:', error);
+  console.error("Failed to start backend:", error);
   process.exit(1);
 });
