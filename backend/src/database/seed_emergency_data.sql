@@ -26,6 +26,7 @@ INSERT INTO emergencies (name, emergency_type_id) VALUES
   ('Hurricane', 3),
   ('Domestic violence', 4),
   ('Child abuse', 4),
+  ('Minor missing', 5),
   ('Radiation', 6),
   ('Road traffic accident', 6),
   ('Industrial accident', 6),
